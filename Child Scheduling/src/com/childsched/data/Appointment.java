@@ -62,6 +62,11 @@ public class Appointment {
 	//-----------------------------//
 	public Appointment() {
 	}
+	
+	public Appointment(String actId, String location) {
+		this.sActivityId = actId;
+		this.sLocation = location;
+	}
 
 	//-----------------------------// 
 	//  Class Methods              //
