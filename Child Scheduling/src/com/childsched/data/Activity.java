@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Activity implements Serializable {
 	
+	private static final long serialVersionUID = 191208118325126075L;
 	private String sID = "";
 	private String sName = "";
 	private int    nColor = 0;
@@ -17,7 +18,7 @@ public class Activity implements Serializable {
 	}
 	
 	public Activity(String id, String name, int color, int dur) {
-		String sID = id;
+		sID = id;
 		sName = name;
 		nColor = color;
 		nNormalDuration = dur;

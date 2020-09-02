@@ -6,7 +6,6 @@ public class DrAppt extends Appointment {
 	
 	
 	public DrAppt() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public DrAppt(String doctorName) {
@@ -16,6 +15,17 @@ public class DrAppt extends Appointment {
 	public DrAppt(String doctorName, String actId, String location) {
 		super(actId, location);
 		sDrName = doctorName;
+	}
+
+	//*******************************//
+	//    Getters and Setters        //
+	//*******************************//
+	public String getsDrName() {
+		return sDrName;
+	}
+
+	public void setsDrName(String sDrName) {
+		this.sDrName = sDrName;
 	}
 
 }
