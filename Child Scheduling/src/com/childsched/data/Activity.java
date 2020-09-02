@@ -1,6 +1,8 @@
 package com.childsched.data;
 
-public class Activity {
+import java.io.Serializable;
+
+public class Activity implements Serializable {
 	
 	private String sID = "";
 	private String sName = "";
@@ -51,5 +53,6 @@ public class Activity {
 	public void setnNormalDuration(int nNormalDuration) {
 		this.nNormalDuration = nNormalDuration;
 	}
+	
 
 }

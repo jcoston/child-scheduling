@@ -16,6 +16,12 @@ public class Main {
 //		
 //		c1.toConsole();
 //		c2.toConsole();
+		
+		Activities acs = Activities.load();
+		if(acs.getActivityWithID("Birthday") == null) {
+			acs.addActivity(new Activity("Birthday", "Birthday", 1, 1440));
+			acs.save();
+		}
 
 		byte x = 1;
 		int[] a = {1, 0, 0, 1, 0, 0, 0, 0};
@@ -37,5 +43,7 @@ public class Main {
 		else
 			System.out.println(ldt.toString());
 	}
+	
+	
 
 }
