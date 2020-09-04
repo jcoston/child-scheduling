@@ -83,9 +83,8 @@ public class Appointment {
 			// if so, return our Appt Start Date/Time
 			if(dStartDateTime.isAfter(from)) {
 				return dStartDateTime;
-				// Shouldn't this only occur if dStartDateTime is after "from" AND before "to"?
 			}
-	//		return null;
+			return null;
 		} else {
 			// If we do recur, 
 			// Is the from date after our end date?
@@ -98,9 +97,6 @@ public class Appointment {
 			LocalDateTime ldt = calcNextAppointmentAfter(from);
 			return ldt;
 		}
-		return null;
-		// I had to put this return null in here because if I didn't then I got an error
-
 	}
 	
 	private LocalDateTime calcNextAppointmentAfter(LocalDateTime from) {
@@ -108,7 +104,7 @@ public class Appointment {
 		
 		// loop thru iterations until we get past the test date
 		while(test.isBefore(from) || test.isEqual(from)) {
-			test = iterateAppointment(test);
+			test = iterateAppointment(test, null);
 			if(test == null)
 				return null;
 		}
@@ -135,7 +131,11 @@ public class Appointment {
 	// iterate from one appointment date and time to the next
 	// Note that it's assumed that the passed in date and time 
 	//is an actual appointment date and time
-	private LocalDateTime iterateAppointment(LocalDateTime dt) {
+	private LocalDateTime iterateAppointment(LocalDateTime dt, LocalDateTime to) {
+		
+		if(to == null)
+			to = LocalDateTime.of(dEndsOn, dStartDateTime.toLocalTime());
+		
 		switch(nRecurFreq) {
 		case FREQ_DAILY:
 			return dt.plusDays((long)nFreqPeriods);
@@ -151,7 +151,7 @@ public class Appointment {
 				// so we'll check from the passed date first 
 				ArrayList<LocalDateTime> alDt = getDaysOfMonthForWeekAndDay(dt);
 				for(LocalDateTime xdt : alDt) {
-					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
+					if(xdt.isAfter(dt) && xdt.isBefore(to)) {
 						return xdt;
 					}
 				}
@@ -162,7 +162,7 @@ public class Appointment {
 				alDt = getDaysOfMonthForWeekAndDay(newDt);
 				// find the first one after our passed in date
 				for(LocalDateTime xdt : alDt) {
-					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
+					if(xdt.isAfter(dt) && xdt.isBefore(to)) {
 						return xdt;
 					}
 				}
