@@ -62,18 +62,14 @@ public class Appointment {
 	//-----------------------------//
 	public Appointment() {
 	}
-	
-	public Appointment(String actId, String location) {
-		this.sActivityId = actId;
-		this.sLocation = location;
-	}
 
 	//-----------------------------// 
 	//  Class Methods              //
 	//-----------------------------//
 
 	public LocalDateTime getNextAppointmentAfter(LocalDateTime from) {
-	// if no from date was passed, set it to now. 
+		
+		// if no from date was passed, set it to now. 
 		if(from == null) {
 			from = LocalDateTime.now();
 		}
@@ -83,6 +79,7 @@ public class Appointment {
 			// if so, return our Appt Start Date/Time
 			if(dStartDateTime.isAfter(from)) {
 				return dStartDateTime;
+				// Shouldn't this only occur if dStartDateTime is after "from" AND before "to"?
 			}
 			return null;
 		} else {
@@ -94,8 +91,7 @@ public class Appointment {
 				return null;
 			}
 			// if not, calculate (from the from date) our next Appt Date and return it.
-			LocalDateTime ldt = calcNextAppointmentAfter(from);
-			return ldt;
+			return calcNextAppointmentAfter(from);
 		}
 	}
 	
@@ -104,7 +100,7 @@ public class Appointment {
 		
 		// loop thru iterations until we get past the test date
 		while(test.isBefore(from) || test.isEqual(from)) {
-			test = iterateAppointment(test, null);
+			test = iterateAppointment(test);
 			if(test == null)
 				return null;
 		}
@@ -116,7 +112,40 @@ public class Appointment {
 
 	public ArrayList<LocalDateTime> getAppointmentsBetween(LocalDateTime from, LocalDateTime to) {
 		//TODO write pseudo code of how this method should work
-		return null;
+		// if no from date was passed, set it to now. 
+		if(from == null) {
+			from = LocalDateTime.now();
+		}
+		// if no to date was passed, set it to tomorrow.
+		if(to == null) {
+			to = LocalDateTime.now().plusDays(1);	
+		}
+		// Do we recur?
+		if(!bRecurs) {
+			// If not, is our Appt date/time >= the from date/time and <= the to date/time?
+			// if so, return our Appt Start Date/Time
+			if(dStartDateTime.isAfter(from) && dStartDateTime.isBefore(to)) {
+				ArrayList<LocalDateTime> al = new ArrayList<LocalDateTime>();
+				al.add(dStartDateTime);
+				return al;
+			}
+			return null;
+		} else {
+		// If we do recur, 
+		// Is the from date after our end date?
+		// if so, return null
+			LocalDateTime ldtEndsOn = dEndsOn.atStartOfDay();
+			if(from.isAfter(ldtEndsOn)) {
+				return null;
+			}
+		// is the to date before the start date?
+		// if so, return null
+			if(to.isBefore(dStartDateTime)) {
+				return null;
+			}
+		// if not, calculate the appointments between from and to.
+			return calcAppointmentsBetween(from,to);
+		}
 	}
 
 	private ArrayList<LocalDateTime> calcAppointmentsBetween(LocalDateTime from, LocalDateTime to) {
@@ -131,11 +160,7 @@ public class Appointment {
 	// iterate from one appointment date and time to the next
 	// Note that it's assumed that the passed in date and time 
 	//is an actual appointment date and time
-	private LocalDateTime iterateAppointment(LocalDateTime dt, LocalDateTime to) {
-		
-		if(to == null)
-			to = LocalDateTime.of(dEndsOn, dStartDateTime.toLocalTime());
-		
+	private LocalDateTime iterateAppointment(LocalDateTime dt) {
 		switch(nRecurFreq) {
 		case FREQ_DAILY:
 			return dt.plusDays((long)nFreqPeriods);
@@ -151,7 +176,7 @@ public class Appointment {
 				// so we'll check from the passed date first 
 				ArrayList<LocalDateTime> alDt = getDaysOfMonthForWeekAndDay(dt);
 				for(LocalDateTime xdt : alDt) {
-					if(xdt.isAfter(dt) && xdt.isBefore(to)) {
+					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
 						return xdt;
 					}
 				}
@@ -162,7 +187,7 @@ public class Appointment {
 				alDt = getDaysOfMonthForWeekAndDay(newDt);
 				// find the first one after our passed in date
 				for(LocalDateTime xdt : alDt) {
-					if(xdt.isAfter(dt) && xdt.isBefore(to)) {
+					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
 						return xdt;
 					}
 				}
@@ -323,4 +348,3 @@ public class Appointment {
 		nPossibleDays = days;
 	}
 }
-
