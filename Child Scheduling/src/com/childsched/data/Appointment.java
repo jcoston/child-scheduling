@@ -105,14 +105,11 @@ public class Appointment {
 		
 		// loop thru iterations until we get past the test date
 		while(test.isBefore(from) || test.isEqual(from)) {
-			test = iterateAppointment(test);
+			test = iterateAppointment(test,null);
 			if(test == null)
 				return null;
 		}
-		if(test.toLocalDate().isBefore(dEndsOn))
-			return test;
-		else
-			return null;
+		return test;
 	}
 
 	public ArrayList<LocalDateTime> getAppointmentsBetween(LocalDateTime from, LocalDateTime to) {
@@ -139,13 +136,10 @@ public class Appointment {
 		// If we do recur, 
 		// Is the from date after our end date?
 		// if so, return null
-			LocalDateTime ldtEndsOn = dEndsOn.atStartOfDay();
-			if(from.isAfter(ldtEndsOn)) {
-				return null;
-			}
 		// is the to date before the start date?
 		// if so, return null
-			if(to.isBefore(dStartDateTime)) {
+			LocalDateTime ldtEndsOn = dEndsOn.atStartOfDay();
+			if(from.isAfter(ldtEndsOn) || to.isBefore(dStartDateTime)) {
 				return null;
 			}
 		// if not, calculate the appointments between from and to.
@@ -155,7 +149,26 @@ public class Appointment {
 
 	private ArrayList<LocalDateTime> calcAppointmentsBetween(LocalDateTime from, LocalDateTime to) {
 		// TODO write pseudo code of how this method should work 
-		return null;
+		
+		LocalDateTime test = dStartDateTime;  // date/time we'll use to iterate thru appts
+		
+		// loop thru iterations until we get past the test date
+		while(test.isBefore(from)) {
+			test = iterateAppointment(test,to);
+			if(test == null)
+				return null;
+		}
+		
+		ArrayList<LocalDateTime> alTest = new ArrayList<LocalDateTime>();
+		alTest.add(test);
+		
+		while((test.isAfter(from) || test.isEqual(from)) && 
+				(test.isBefore(to) || test.isEqual(to))) {
+			test = iterateAppointment(test,to);
+			if(test == null) return alTest;
+			alTest.add(test);
+		}
+		return alTest;
 	}
 	
 	public boolean hasAppointmentOn(LocalDate tstDt) {
@@ -165,16 +178,27 @@ public class Appointment {
 	// iterate from one appointment date and time to the next
 	// Note that it's assumed that the passed in date and time 
 	//is an actual appointment date and time
-	private LocalDateTime iterateAppointment(LocalDateTime dt) {
+	private LocalDateTime iterateAppointment(LocalDateTime dt, LocalDateTime to) {
+		
+		LocalDateTime retDt;
+		
+		if(to == null) {
+			to = LocalDateTime.of(dEndsOn, dStartDateTime.toLocalTime());
+		} else {
+			
+		}
+		
 		switch(nRecurFreq) {
 		case FREQ_DAILY:
-			return dt.plusDays((long)nFreqPeriods);
+			retDt = dt.plusDays((long)nFreqPeriods);
+			break;
 		case FREQ_WEEKLY:
-			return dt.plusWeeks((long)nFreqPeriods);
+			retDt = dt.plusWeeks((long)nFreqPeriods);
+			break;
 		case FREQ_MONTHLY:
 			// if it's a day of month, no problem
 			if(nFreqType == FREQ_TYPE_DAY_OF_MONTH)
-				return dt.plusMonths((long)nFreqPeriods);
+				retDt = dt.plusMonths((long)nFreqPeriods);
 			else {
 				// not a day of month, so it's a more complicated situation.
 				// Depending on selections, we might have more appts this month
@@ -182,7 +206,7 @@ public class Appointment {
 				ArrayList<LocalDateTime> alDt = getDaysOfMonthForWeekAndDay(dt);
 				for(LocalDateTime xdt : alDt) {
 					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
-						return xdt;
+						retDt = xdt;
 					}
 				}
 				// if we get here, then we didn't find another appointment in the passed month
@@ -193,16 +217,17 @@ public class Appointment {
 				// find the first one after our passed in date
 				for(LocalDateTime xdt : alDt) {
 					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
-						return xdt;
+						retDt = xdt;
 					}
 				}
 			}
 			// we just couldn't find one that fit. 
-			return null;
+			retDt = null;
+			break;
 		case FREQ_YEARLY:
 			// if it's a day of month, no problem
 			if(nFreqType == FREQ_TYPE_DAY_OF_MONTH)
-				return dt.plusYears((long)nFreqPeriods);
+				retDt = dt.plusYears((long)nFreqPeriods);
 			else {
 				// not a day of month, so it's a more complicated.
 				// Depending on selections, we might have more appts this month
@@ -210,7 +235,7 @@ public class Appointment {
 				ArrayList<LocalDateTime> alDt = getDaysOfMonthForWeekAndDay(dt);
 				for(LocalDateTime xdt : alDt) {
 					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
-						return xdt;
+						retDt = xdt;
 					}
 				}
 				// if we get here, then we didn't find another appointment in the passed month
@@ -223,15 +248,23 @@ public class Appointment {
 				// find the first one after our passed in date
 				for(LocalDateTime xdt : alDt) {
 					if(xdt.isAfter(dt) && xdt.toLocalDate().isBefore(dEndsOn)) {
-						return xdt;
+						retDt = xdt;
 					}
 				}
 			}
 			// we just couldn't find one that fit. 
-			return null;
+			retDt = null;
+			break;
 		default:
+			retDt = null;
+		}
+		if(retDt == null) {return null;}
+		
+		if(retDt.isBefore(to) || 
+				retDt.isEqual(to))
+			return retDt;
+		else
 			return null;
-		}		
 	}
 	
 	private ArrayList<LocalDateTime> getDaysOfMonthForWeekAndDay(LocalDateTime dSomeDayInMonth) {

@@ -4,7 +4,6 @@ public class DrAppt extends Appointment {
 	
 	private String sDrName = "";
 	
-	
 	public DrAppt() {
 	}
 	

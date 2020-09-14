@@ -2,6 +2,7 @@ package com.childsched;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import com.childsched.data.*;
 
@@ -32,18 +33,14 @@ public class Main {
 		appt.setdEndsOn(LocalDate.of(2020, 12, 31));
 		appt.setdStartDateTime(LocalDateTime.of(2020, 8, 29, 10, 00));
 		appt.setnFreqPeriods(x);
-		appt.setnRecurFreq(Appointment.FREQ_YEARLY);
+		appt.setnRecurFreq(Appointment.FREQ_WEEKLY);
 		appt.setnFreqType(Appointment.FREQ_TYPE_WEEKDAY);
 		appt.setnPossibleDays(a);
 		appt.setnWeeksOfMonth(w);
 		
-		LocalDateTime ldt = appt.getNextAppointmentAfter(LocalDateTime.of(2020, 8, 29, 10, 00));
-		if(ldt == null)
-			System.out.println("NULL!!!");
-		else
-			System.out.println(ldt.toString());
+		ArrayList<LocalDateTime> aldt = appt.getAppointmentsBetween(LocalDateTime.of(2020, 8, 29, 11, 00),LocalDateTime.of(2020, 10, 31, 10, 00));
+		for (LocalDateTime ldt:aldt) {
+			System.out.println(ldt);
+		}
 	}
-	
-	
-
 }
