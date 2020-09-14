@@ -172,6 +172,9 @@ public class Appointment {
 	}
 	
 	public boolean hasAppointmentOn(LocalDate tstDt) {
+		LocalDateTime nxtOn = getNextAppointmentAfter(tstDt.atStartOfDay());
+		if(nxtOn.toLocalDate().isEqual(tstDt))
+			return true;
 		return false;
 	}
 	
