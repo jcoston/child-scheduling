@@ -8,9 +8,12 @@ public class Child {
 	private String    sName = "";
 	private String    gender = "";
 	private LocalDate dBirthDate = LocalDate.of(1900, 1, 1);
+	private Appointments appointments;
+	
 	
 	// Default Constructor
 	public Child() {
+		
 	}
 	
 	// Constructor 2
@@ -38,6 +41,24 @@ public class Child {
 	public int getAge() {
 		Period pd = dBirthDate.until(LocalDate.now());
 		return pd.getYears();
+	}
+	
+	public void createAppointment(String actId, String loc, boolean recurs, 
+			LocalDateTime ldt, short dur, LocalDate endsOn, byte rFreq, 
+			byte freqPers, byte freqType, int[] wom, int[] possDays) 
+	{
+		Appointment appt = new Appointment(actId, loc);
+		appt.setbRecurs(recurs);
+		appt.setdStartDateTime(ldt);
+		appt.setnDuration(dur);
+		appt.setdEndsOn(endsOn);
+		appt.setnRecurFreq(rFreq);
+		appt.setnFreqPeriods(freqPers);
+		appt.setnFreqType(freqType);
+		appt.setnWeeksOfMonth(wom);
+		appt.setnPossibleDays(possDays);
+		
+		appointments.addAppointment(appt);
 	}
 
 	//----------------------------//
@@ -74,6 +95,10 @@ public class Child {
 
 	public void setdBirthDate(LocalDate dBirthDate) {
 		this.dBirthDate = dBirthDate;
+	}
+	
+	public Appointments getAppointments() {
+		return appointments;
 	}
 
 	

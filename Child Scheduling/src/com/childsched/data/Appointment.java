@@ -3,7 +3,7 @@ package com.childsched.data;
 import java.time.*;
 import java.util.ArrayList;
 
-public class Appointment {
+public class Appointment implements Serializable {
 	//---------------------------------------------------// 
 	//      CONSTANTS                                    //
 	//---------------------------------------------------// 
@@ -182,13 +182,14 @@ public class Appointment {
 	// Note that it's assumed that the passed in date and time 
 	//is an actual appointment date and time
 	private LocalDateTime iterateAppointment(LocalDateTime dt, LocalDateTime to) {
-		
+		LocalDateTime x = LocalDateTime.of(dEndsOn,  dStartDateTime.toLocalTime());
 		LocalDateTime retDt;
 		
 		if(to == null) {
-			to = LocalDateTime.of(dEndsOn, dStartDateTime.toLocalTime());
-		} else {
-			
+			to = x;
+		else {
+			if(to.isAfter(x))
+				to = x;
 		}
 		
 		switch(nRecurFreq) {

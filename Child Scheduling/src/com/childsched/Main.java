@@ -38,9 +38,19 @@ public class Main {
 		appt.setnPossibleDays(a);
 		appt.setnWeeksOfMonth(w);
 		
+<<<<<<< Upstream, based on origin/master
 		ArrayList<LocalDateTime> aldt = appt.getAppointmentsBetween(LocalDateTime.of(2020, 8, 29, 11, 00),LocalDateTime.of(2020, 10, 31, 10, 00));
 		for (LocalDateTime ldt:aldt) {
 			System.out.println(ldt);
 		}
+=======
+		LocalDateTime ldt = appt.getNextAppointmentAfter(LocalDateTime.of(2020, 8, 29, 10, 00));
+		if(ldt == null)
+			System.out.println("NULL!!!");
+		else
+			System.out.println(ldt.toString());
+		
+		
+>>>>>>> 140d2c8 # WARNING: head commit changed in the meantime
 	}
 }

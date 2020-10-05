@@ -70,5 +70,6 @@ public class Activities implements Serializable {
 			return new Activities();
 		}
 	}
+	
 
 }
